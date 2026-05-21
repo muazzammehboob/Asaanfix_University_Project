@@ -1,0 +1,49 @@
+# FixIt Hub Pakistan - Git Ignore
+# Professional development workflow
+
+# ─── Environment ───
+.env
+*.env.local
+
+# ─── Dependencies ───
+/vendor/
+/node_modules/
+
+# ─── Cache ───
+/cache/
+*.cache
+
+# ─── Uploads (user content) ───
+/uploads/avatars/*
+/uploads/services/*
+!/uploads/avatars/.gitkeep
+!/uploads/services/.gitkeep
+
+# ─── IDE & Editor ───
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+
+# ─── OS Files ───
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ─── Logs ───
+*.log
+/logs/
+
+# ─── PHP ───
+/composer.lock
+
+# ─── Temporary ───
+/tmp/
+*.tmp
+*.bak
+*.orig

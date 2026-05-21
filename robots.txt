@@ -1,0 +1,26 @@
+# FixIt Hub Pakistan - robots.txt
+# Production SEO Configuration
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /database/
+Disallow: /uploads/avatars/
+Disallow: /cache/
+Disallow: /app/
+
+# Sitemap
+Sitemap: http://localhost:8000/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 1
+
+# Block specific bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

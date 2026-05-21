@@ -1,0 +1,922 @@
+================================================================================
+                     ASAANFIX PAKISTAN - PROJECT DOCUMENTATION
+              Online Home Services Booking Platform for Pakistan
+================================================================================
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+Project Name    : AsaanFix Pakistan
+Version         : 2.0.0
+Type            : Web-Based Home Services Booking Platform
+Domain          : On-Demand Service Marketplace
+Target Region   : Pakistan (Islamabad, Lahore, Karachi, Rawalpindi)
+Currency        : PKR (Pakistani Rupee)
+
+Description:
+AsaanFix Pakistan is a full-stack web application that connects customers
+with verified technicians for home services such as mobile repair, plumbing,
+electrician work, AC services, laptop repair, and more. Customers can browse
+services, view technician profiles, book appointments, make payments, leave
+reviews, and communicate with technicians through the platform.
+
+================================================================================
+2. TECHNOLOGY STACK
+================================================================================
+
+Category            Technology              Version
+-----------         -----------             -------
+Backend Language    PHP                     8.2.12
+Database            MySQL (MariaDB)         via XAMPP
+Web Server          Apache / PHP Built-in   2.4.58 / 8.2
+Frontend Framework  Bootstrap               5.3.3
+CSS                 Custom CSS              -
+JavaScript          Vanilla JS              ES6+
+Icons               Bootstrap Icons         1.11.3
+Icons (alt)         Font Awesome            6.5.1
+Animations          AOS (Animate On Scroll) 2.3.4
+Alerts              SweetAlert2             11.x
+Charts              Chart.js                4.x
+Fonts               Google Fonts (Inter)    -
+
+Development Tools:
+- XAMPP (Apache + MySQL + PHP)
+- PHP Built-in Development Server (php -S localhost:8000 router.php)
+- Git for version control
+
+================================================================================
+3. SYSTEM REQUIREMENTS
+================================================================================
+
+Software Requirements:
+- PHP 8.0 or higher
+- MySQL 5.7+ or MariaDB 10.3+
+- Apache 2.4+ with mod_rewrite (for production)
+- Web browser (Chrome, Firefox, Edge)
+
+PHP Extensions Required:
+- PDO and PDO_MySQL
+- mbstring
+- openssl
+- json
+- session
+- gd (for image processing)
+
+Hardware Requirements:
+- Processor: Intel i3 or equivalent
+- RAM: 4 GB minimum
+- Storage: 500 MB for application files
+- Internet connection for CDN resources
+
+================================================================================
+4. INSTALLATION & SETUP
+================================================================================
+
+Step 1: Database Setup
+   - Open phpMyAdmin (http://localhost/phpmyadmin)
+   - Import database/schema.sql to create the database and tables
+   - Import database/seed.sql to populate with sample data
+
+Step 2: Environment Configuration
+   - Copy .env.example to .env
+   - Update the following values in .env:
+     APP_URL=http://localhost:8000
+     DB_HOST=localhost
+     DB_NAME=fixithub_pakistan
+     DB_USER=root
+     DB_PASS=
+
+Step 3: Running the Application
+   Option A - PHP Built-in Server (Development):
+     cd AsaanFix
+     php -S localhost:8000 router.php
+     Open http://localhost:8000 in browser
+
+   Option B - Apache/XAMPP (Production-like):
+     Place project in htdocs/university-project/AsaanFix/
+     Update APP_URL in .env to match Apache path
+     Open http://localhost/university-project/AsaanFix
+
+Step 4: Demo Login Credentials
+   Admin:      admin@fixithub.pk     / password
+   User:       ahmed@example.com     / password
+   Technician: usman@example.com    / password
+
+================================================================================
+5. PROJECT ARCHITECTURE
+================================================================================
+
+5.1 Directory Structure:
+
+AsaanFix/
+|-- .env                    Environment configuration
+|-- .env.example            Environment template
+|-- .htaccess               Apache URL rewriting & security rules
+|-- router.php              PHP built-in server router (clean URLs)
+|-- index.php               Homepage
+|-- about.php               About Us page
+|-- contact.php             Contact Us page with form
+|-- services.php            All services listing with filters
+|-- service-detail.php      Individual service detail page
+|-- technicians.php         All technicians listing
+|-- technician-profile.php  Individual technician profile
+|-- book-service.php        Service booking form
+|-- faq.php                 Frequently asked questions
+|-- privacy.php             Privacy policy page
+|-- terms.php               Terms of service page
+|-- sitemap.php             Dynamic XML sitemap for SEO
+|-- robots.txt              Search engine crawling rules
+|
+|-- config/                 Configuration files
+|   |-- constants.php       Application constants & settings
+|   |-- database.php        PDO database connection (singleton)
+|   |-- env.php             Environment variable loader class
+|   |-- session.php         Session management & helpers
+|
+|-- includes/               Shared templates & utilities
+|   |-- header.php          HTML head, meta tags, CSS includes
+|   |-- footer.php          Footer, JS includes, scripts
+|   |-- navbar.php          Responsive navigation bar
+|   |-- sidebar.php         Admin/dashboard sidebar
+|   |-- auth.php            Authentication middleware
+|   |-- csrf.php            CSRF token protection
+|   |-- functions.php       Core helper functions
+|
+|-- auth/                   Authentication pages
+|   |-- login.php           User login with demo accounts
+|   |-- register.php        User/technician registration
+|   |-- logout.php          Session destruction
+|   |-- forgot-password.php Password reset request
+|
+|-- admin/                  Admin panel (requires admin role)
+|   |-- dashboard.php       Admin overview with charts
+|   |-- users.php           User management (CRUD)
+|   |-- technicians.php     Technician approval & management
+|   |-- bookings.php        All bookings management
+|   |-- services.php        Service management (CRUD)
+|   |-- categories.php      Category management (CRUD)
+|   |-- reviews.php         Review moderation
+|   |-- reports.php         Revenue & analytics reports
+|   |-- settings.php        Platform settings
+|   |-- notifications.php   Admin notifications
+|   |-- profile.php         Admin profile management
+|   |-- logs.php            Admin activity audit logs
+|
+|-- user/                   Customer dashboard (requires user role)
+|   |-- dashboard.php       User overview & stats
+|   |-- bookings.php        My bookings list
+|   |-- booking-detail.php  Booking detail & status tracking
+|   |-- messages.php        Chat with technicians
+|   |-- reviews.php         My reviews
+|   |-- notifications.php   User notifications
+|   |-- profile.php         Profile settings & avatar
+|
+|-- technician/             Technician dashboard (requires technician role)
+|   |-- dashboard.php       Technician overview & stats
+|   |-- bookings.php        Assigned bookings management
+|   |-- earnings.php        Earnings & payment history
+|   |-- availability.php    Schedule & availability settings
+|   |-- reviews.php         Reviews received
+|   |-- notifications.php   Technician notifications
+|   |-- profile.php         Profile & skills management
+|
+|-- api/                    REST API endpoints
+|   |-- auth.php            JWT-based authentication API
+|   |-- search.php          Service search API
+|   |-- notifications.php   Notifications API
+|   |-- payment.php         Payment gateway callbacks
+|
+|-- app/                    Application logic (MVC-style)
+|   |-- helpers/
+|   |   |-- Cache.php       File-based caching system
+|   |   |-- ImageOptimizer.php  Image upload & WebP conversion
+|   |   |-- PaymentGateway.php  JazzCash & EasyPaisa integration
+|   |   |-- SEO.php         SEO meta tags & JSON-LD generator
+|   |-- middleware/
+|   |   |-- Security.php    Rate limiting, CSP, secure headers
+|   |   |-- JWTAuth.php     JWT token authentication for API
+|
+|-- assets/                 Static frontend assets
+|   |-- css/style.css       Main stylesheet (20KB)
+|   |-- js/app.js           Main JavaScript (11KB)
+|   |-- images/             Favicon, logos, OG images
+|
+|-- database/               Database files
+|   |-- schema.sql          Complete database schema (12 tables)
+|   |-- seed.sql            Sample data for testing
+|   |-- migration_v2.sql    Migration for v2 updates
+|
+|-- uploads/                User-uploaded files
+|   |-- avatars/            User profile photos
+|   |-- services/           Service images
+|
+|-- cache/                  File-based cache storage
+
+5.2 Design Pattern:
+The application follows a procedural PHP architecture with MVC-inspired
+organization. Pages are served through a router that maps clean URLs to
+PHP files. Shared logic is centralized in includes/ and app/ directories.
+
+5.3 Frontend, Backend, and Database Interaction (Data Flow):
+The system operates on a classic Client-Server request-response cycle, seamlessly
+integrating the frontend (UI), backend (PHP), and MySQL database:
+
+1. Frontend (Client Side):
+   - Built with HTML, CSS (Bootstrap 5), and Vanilla JavaScript.
+   - When a user interacts with the UI (e.g., submitting a booking form),
+     JS handles client-side validation, enhances the UI with animations (AOS), 
+     and formats the request for the backend.
+   - Asynchronous requests (AJAX/Fetch) are utilized in specific areas 
+     to dynamically load data without full page reloads.
+
+2. Backend (Server Side):
+   - The server receives the HTTP request and routes it via `router.php` 
+     to the appropriate PHP script (e.g., `book-service.php`).
+   - The PHP script performs crucial server-side validation, validates CSRF 
+     tokens, and checks user authentication/authorization.
+   - It processes core business logic, such as calculating service costs,
+     applying commissions, or dispatching notifications.
+
+3. Database Management (MySQL):
+   - The backend communicates securely with the MariaDB/MySQL database using 
+     PDO (PHP Data Objects) and prepared statements to prevent SQL injection.
+   - Data is queried, inserted, or updated based on the request (e.g., 
+     creating a new record in the `bookings` table).
+   - Custom wrapper functions (`dbQuery()`, `dbQueryOne()`, `dbExecute()`) 
+     abstract and streamline these PDO interactions.
+
+4. Response & Rendering:
+   - Upon successful database operations, the backend fetches the required 
+     data (utilizing the file-based caching system for performance optimization).
+   - This data is injected into HTML templates (views).
+   - The generated HTML, along with success/error flash messages (rendered 
+     via SweetAlert2), is sent back to the browser for the user to see.
+
+================================================================================
+6. DATABASE DESIGN
+================================================================================
+
+Database Name: fixithub_pakistan
+Character Set: utf8mb4 (full Unicode support)
+Timezone: +05:00 (Pakistan Standard Time)
+
+6.1 Tables Overview (12 Tables):
+
+Table                    Purpose                          Key Fields
+-----                    -------                          ----------
+users                    All users (admin/user/tech)       id, name, email, password, role, city
+categories               Service categories               id, name, slug, icon, sort_order
+services                 Individual services              id, category_id, name, base_price
+technicians              Technician profiles              id, user_id, skills, hourly_rate, status
+technician_services      Links technicians to services    technician_id, service_id, custom_price
+bookings                 Service bookings                 id, booking_number, user_id, tech_id, status
+booking_status_history   Booking status audit trail       booking_id, status, changed_by
+payments                 Payment transactions             id, booking_id, amount, method, status
+reviews                  Customer reviews & ratings       id, booking_id, rating, comment, reply
+messages                 User-technician chat             id, sender_id, receiver_id, message
+notifications            System notifications             id, user_id, title, type, is_read
+admin_logs               Admin action audit log           id, admin_id, action, ip_address
+settings                 Platform configuration           setting_key, setting_value
+contact_messages         Contact form submissions         id, name, email, subject, message
+
+6.2 Entity Relationships:
+- users (1) ---> (many) bookings (as customer)
+- users (1) ---> (1) technicians (technician profile)
+- technicians (1) ---> (many) bookings (as service provider)
+- categories (1) ---> (many) services
+- services (1) ---> (many) bookings
+- technicians (many) <---> (many) services (via technician_services)
+- bookings (1) ---> (1) reviews
+- bookings (1) ---> (many) payments
+- bookings (1) ---> (many) booking_status_history
+- users (many) <---> (many) messages
+
+6.3 User Roles:
+- user       : Customer who books services
+- technician : Service provider who accepts jobs
+- admin      : Platform administrator with full access
+
+6.4 Booking Status Flow:
+pending --> accepted --> technician_on_way --> in_progress --> completed
+    |                                              |
+    +--> cancelled                                 +--> disputed --> refunded
+
+================================================================================
+7. FEATURES & MODULES
+================================================================================
+
+7.1 PUBLIC PAGES (No login required):
+
+a) Homepage (index.php)
+   - Hero section with search bar
+   - Service categories grid (8 categories)
+   - "How It Works" 3-step guide
+   - Popular services with pricing
+   - Top-rated technicians showcase
+   - "Why Choose Us" features section
+   - Call-to-action section
+   - Animated floating badges and statistics counters
+
+b) Services Page (services.php)
+   - Full service listing with card layout
+   - Search by keyword
+   - Filter by category
+   - Sort by name/price
+   - Category tag-based quick filters
+   - Pagination support
+   - Service cards showing price, duration, category
+
+c) Service Detail Page (service-detail.php)
+   - Service description and pricing
+   - Available technicians for this service
+   - Technician ratings and experience
+   - Book Now button
+
+d) Technicians Page (technicians.php)
+   - All approved technicians listing
+   - Filter by city and availability
+   - Search by name or skill
+   - Rating display with stars
+   - Job count and experience
+
+e) Technician Profile (technician-profile.php)
+   - Full profile with bio, skills, experience
+   - Star rating with review count
+   - Service areas listed
+   - Customer reviews section
+   - Working hours and availability
+   - Services offered with pricing
+
+f) About Page (about.php)
+   - Company story and mission
+   - Platform statistics
+   - Team/values section
+
+g) Contact Page (contact.php)
+   - Contact form (name, email, phone, subject, message)
+   - Office address, email, phone info
+   - Form submissions saved to database
+
+h) FAQ Page (faq.php)
+   - Accordion-style Q&A
+   - Categories of questions
+
+i) Privacy Policy & Terms pages
+
+7.2 AUTHENTICATION MODULE:
+
+a) Login (auth/login.php)
+   - Email + password authentication
+   - Password hashing with bcrypt (password_verify)
+   - Rate limiting (max 10 attempts per 5 minutes)
+   - Login attempt tracking with lockout (5 failures = 15 min lock)
+   - CSRF token protection
+   - Quick demo login buttons for testing
+   - Remember me option
+   - Password visibility toggle
+
+b) Registration (auth/register.php)
+   - Role selection (User or Technician)
+   - Form fields: name, email, phone, password, city, address
+   - Pakistani phone number validation (+92 format)
+   - Password strength requirements (8+ chars, upper, lower, number)
+   - Email uniqueness check
+   - CSRF protection
+   - Technician-specific fields (CNIC, skills, bio, experience)
+
+c) Logout (auth/logout.php)
+   - Session destruction
+   - Secure cookie removal
+   - Redirect to homepage
+
+d) Forgot Password (auth/forgot-password.php)
+   - Email-based password reset request
+   - Secure reset token generation
+
+7.3 CUSTOMER DASHBOARD (user/):
+
+a) Dashboard (user/dashboard.php)
+   - Booking statistics (total, active, completed)
+   - Recent bookings list
+   - Quick action buttons
+
+b) My Bookings (user/bookings.php)
+   - All bookings with status badges
+   - Filter by status
+   - View booking details
+
+c) Booking Detail (user/booking-detail.php)
+   - Full booking information
+   - Status timeline/history
+   - Technician contact info
+   - Cancel booking option
+   - Leave review (after completion)
+   - Payment status
+
+d) Messages (user/messages.php)
+   - Chat with technicians
+   - Real-time message display
+   - Booking-linked conversations
+
+e) Reviews (user/reviews.php)
+   - Reviews submitted by user
+   - Star ratings given
+
+f) Profile (user/profile.php)
+   - Edit personal information
+   - Change password
+   - Upload avatar
+   - Update address and city
+
+g) Notifications (user/notifications.php)
+   - Booking updates
+   - System notifications
+   - Mark as read functionality
+
+7.4 TECHNICIAN DASHBOARD (technician/):
+
+a) Dashboard (technician/dashboard.php)
+   - Job statistics (pending, active, completed)
+   - Earnings overview
+   - Recent booking requests
+   - Rating summary
+
+b) Bookings (technician/bookings.php)
+   - Incoming booking requests
+   - Accept/reject bookings
+   - Update booking status
+   - View customer details
+   - Filter by status
+
+c) Earnings (technician/earnings.php)
+   - Total earnings display
+   - Monthly earnings breakdown
+   - Payment history
+   - Commission tracking
+
+d) Availability (technician/availability.php)
+   - Set working hours (from/to time)
+   - Select working days
+   - Toggle availability status
+   - Define service areas
+
+e) Reviews (technician/reviews.php)
+   - Reviews from customers
+   - Reply to reviews
+   - Average rating display
+
+f) Profile (technician/profile.php)
+   - Edit bio and skills
+   - Update hourly rate
+   - Manage service offerings
+   - Upload avatar
+
+7.5 ADMIN PANEL (admin/):
+
+a) Dashboard (admin/dashboard.php)
+   - Platform statistics cards (users, technicians, bookings, revenue)
+   - Revenue chart (Chart.js bar chart - monthly)
+   - Booking status distribution (Chart.js doughnut chart)
+   - Recent bookings table
+   - Quick stats with growth indicators
+
+b) User Management (admin/users.php)
+   - All users listing with search
+   - Filter by role (user/technician/admin)
+   - Activate/deactivate users
+   - View user details
+   - Pagination
+
+c) Technician Management (admin/technicians.php)
+   - Technician applications list
+   - Approve/reject applications
+   - View CNIC and credentials
+   - Suspend technicians
+   - Filter by status (pending/approved/rejected/suspended)
+
+d) Booking Management (admin/bookings.php)
+   - All bookings overview
+   - Filter by status
+   - Admin notes on bookings
+   - Cancel bookings
+   - View full booking details
+
+e) Service Management (admin/services.php)
+   - CRUD operations for services
+   - Assign to categories
+   - Set pricing and duration
+   - Toggle active/inactive
+   - Upload service images
+
+f) Category Management (admin/categories.php)
+   - CRUD operations for categories
+   - Set icons (Bootstrap Icons)
+   - Sort order management
+   - Toggle visibility
+
+g) Review Moderation (admin/reviews.php)
+   - All reviews listing
+   - Toggle review visibility
+   - View ratings distribution
+
+h) Reports (admin/reports.php)
+   - Revenue analytics
+   - Booking trends
+   - Top technicians
+   - User growth metrics
+
+i) Settings (admin/settings.php)
+   - Platform name, email, phone
+   - Commission rate
+   - Booking rules (min hours, max days)
+   - Maintenance mode toggle
+
+j) Admin Logs (admin/logs.php)
+   - Audit trail of all admin actions
+   - IP address tracking
+   - User agent logging
+   - Timestamp records
+
+k) Notifications (admin/notifications.php)
+   - System alerts
+   - New technician applications
+   - Booking issues
+
+================================================================================
+8. SECURITY FEATURES
+================================================================================
+
+8.1 Authentication & Authorization:
+- Bcrypt password hashing (password_hash / password_verify)
+- Role-based access control (user, technician, admin)
+- Session-based authentication with regeneration on login
+- JWT token authentication for REST API
+- Login attempt tracking with automatic lockout
+- Secure session configuration (httponly, samesite)
+
+8.2 Input Protection:
+- CSRF token protection on all forms
+- Prepared statements (PDO) for all database queries (SQL injection prevention)
+- Input sanitization with htmlspecialchars (XSS prevention)
+- Email and phone validation
+- File upload validation (type, size, content scanning)
+
+8.3 HTTP Security Headers:
+- Content-Security-Policy (CSP)
+- X-Frame-Options: SAMEORIGIN (clickjacking prevention)
+- X-Content-Type-Options: nosniff
+- X-XSS-Protection: 1; mode=block
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy (geolocation, microphone, camera)
+- Strict-Transport-Security (production HTTPS)
+
+8.4 Rate Limiting:
+- File-based rate limiting system
+- 60 requests per minute per IP (configurable)
+- Login-specific rate limiting (10 per 5 minutes)
+- HTTP 429 response with Retry-After header
+
+8.5 File Security:
+- Randomized upload filenames (prevents enumeration)
+- PHP content detection in uploads (blocks malicious files)
+- .htaccess blocks access to config/, includes/, .env, .git
+- Directory listing disabled (Options -Indexes)
+- Sensitive file types blocked (.sql, .env, .log, etc.)
+
+================================================================================
+9. API ENDPOINTS
+================================================================================
+
+Base URL: http://localhost:8000/api
+
+9.1 Authentication API (api/auth.php)
+    POST /api/auth?action=login
+      Body: { email, password }
+      Returns: { access_token, refresh_token, user }
+
+    POST /api/auth?action=register
+      Body: { name, email, phone, password, role, city }
+      Returns: { success, user_id, tokens }
+
+    POST /api/auth?action=refresh
+      Body: { refresh_token }
+      Returns: { access_token, refresh_token }
+
+9.2 Search API (api/search.php)
+    GET /api/search?q=keyword
+      Returns: { services: [...], technicians: [...] }
+
+9.3 Notifications API (api/notifications.php)
+    GET /api/notifications
+      Headers: Authorization: Bearer <token>
+      Returns: { notifications: [...] }
+
+9.4 Payment API (api/payment.php)
+    POST /api/payment/jazzcash-callback
+    POST /api/payment/easypaisa-callback
+      Processes payment gateway responses
+
+================================================================================
+10. PAYMENT INTEGRATION
+================================================================================
+
+Supported Payment Methods:
+1. Cash on Delivery (COD) - Default
+2. JazzCash (Pakistan's leading mobile wallet)
+3. EasyPaisa (Telenor's mobile payment)
+4. Bank Transfer
+5. Credit/Debit Card
+
+Payment Flow:
+1. Customer books a service
+2. Selects payment method
+3. For digital payments, redirected to payment gateway
+4. Gateway processes payment and sends callback
+5. System records transaction and updates booking status
+
+Note: Currently running in sandbox/demo mode. Real gateway credentials
+can be configured in the .env file for production deployment.
+
+Commission System:
+- Platform charges a configurable commission (default 15%)
+- Commission rate configurable in admin settings
+- Technician receives (100% - commission) of booking amount
+
+================================================================================
+11. CACHING SYSTEM
+================================================================================
+
+Type: File-based caching (app/helpers/Cache.php)
+
+Cached Data:
+- Active categories (30 minutes TTL)
+- Active services listings (30 minutes TTL)
+- Homepage statistics (10 minutes TTL)
+
+Cache Operations:
+- Cache::remember(key, ttl, callback) - Get or compute & store
+- Cache::get(key) - Retrieve cached data
+- Cache::put(key, data, ttl) - Store data
+- Cache::forget(key) - Remove specific cache
+- Cache::flush() - Clear all cache
+
+Cache is automatically cleared when admin updates services or categories.
+
+================================================================================
+12. SEO IMPLEMENTATION
+================================================================================
+
+- Dynamic page titles and meta descriptions
+- Open Graph tags for social media sharing
+- Twitter Card meta tags
+- JSON-LD structured data (Organization, LocalBusiness)
+- Dynamic XML sitemap (sitemap.php)
+- robots.txt for search engine crawling
+- Semantic HTML5 elements
+- Clean URL structure (no .php extensions)
+- Canonical URLs
+- Proper heading hierarchy (single H1 per page)
+
+================================================================================
+13. RESPONSIVE DESIGN
+================================================================================
+
+The application is fully responsive using Bootstrap 5.3 grid system:
+
+- Desktop: Full layout with sidebars and multi-column grids
+- Tablet: Adjusted grid (2-column layouts)
+- Mobile: Single column, collapsible navbar, touch-friendly
+
+Key responsive features:
+- Fixed-top navbar with mobile hamburger menu
+- Responsive data tables
+- Flexible card layouts
+- Mobile-optimized forms
+- Touch-friendly buttons and inputs
+
+================================================================================
+14. UI/UX DESIGN FEATURES
+================================================================================
+
+- Dark gradient hero sections
+- Glassmorphism effects on cards
+- AOS (Animate On Scroll) animations
+- Floating animated badges
+- Animated wrench/tool icon on homepage
+- Pulsing glow ring effects
+- Hover lift effects on cards
+- Smooth gradient text effects
+- Star rating visual component
+- Status badges with color coding
+- SweetAlert2 toast notifications
+- Loading states and transitions
+- Breadcrumb navigation
+- Pagination with ellipsis
+- Category tag pills with icons
+
+================================================================================
+15. KEY FUNCTIONS REFERENCE
+================================================================================
+
+Database Functions:
+- dbQuery(sql, params)     : Execute SELECT, return all rows
+- dbQueryOne(sql, params)  : Execute SELECT, return single row
+- dbExecute(sql, params)   : Execute INSERT/UPDATE/DELETE
+- dbLastId()               : Get last auto-increment ID
+
+Authentication Functions:
+- isLoggedIn()             : Check if user is authenticated
+- getCurrentUserId()       : Get logged-in user's ID
+- getCurrentUserRole()     : Get logged-in user's role
+- setUserSession(user)     : Set session after login
+- destroySession()         : Logout and clear session
+- requireLogin()           : Redirect if not logged in
+- requireAdmin()           : Require admin role
+- requireTechnician()      : Require technician role
+
+Utility Functions:
+- sanitize(input)          : Clean user input (XSS prevention)
+- isValidEmail(email)      : Validate email format
+- isValidPhone(phone)      : Validate Pakistani phone (+92)
+- isStrongPassword(pass)   : Check password strength
+- formatPrice(amount)      : Format as "Rs. 1,234"
+- formatDate(date)         : Format as "May 19, 2026"
+- timeAgo(datetime)        : Format as "5 min ago"
+- getStarRating(rating)    : Generate star HTML
+- getStatusBadge(status)   : Generate status badge HTML
+- uploadImage(file, dir)   : Handle image upload
+- getAvatarUrl(avatar)     : Get avatar URL with fallback
+- redirect(url)            : HTTP redirect
+- setFlash(type, message)  : Set flash notification
+- generateCSRFToken()      : Generate CSRF token
+- csrfField()              : Generate hidden CSRF input
+
+================================================================================
+16. ENVIRONMENT VARIABLES
+================================================================================
+
+Variable                   Description                     Default
+--------                   -----------                     -------
+APP_NAME                   Application name                AsaanFix Pakistan
+APP_URL                    Base URL                        http://localhost:8000
+APP_ENV                    Environment                     development
+APP_DEBUG                  Debug mode                      true
+DB_HOST                    Database host                   localhost
+DB_NAME                    Database name                   fixithub_pakistan
+DB_USER                    Database username               root
+DB_PASS                    Database password               (empty)
+JWT_SECRET                 Secret key for JWT tokens       (auto-generated)
+MAX_LOGIN_ATTEMPTS         Failed logins before lockout    5
+LOGIN_LOCKOUT_TIME         Lockout duration (seconds)      900
+RATE_LIMIT_REQUESTS        Max requests per window         60
+RATE_LIMIT_WINDOW          Rate limit window (seconds)     60
+JAZZCASH_MERCHANT_ID       JazzCash merchant ID            (empty)
+JAZZCASH_SANDBOX           JazzCash sandbox mode           true
+EASYPAISA_STORE_ID         EasyPaisa store ID              (empty)
+EASYPAISA_SANDBOX          EasyPaisa sandbox mode          true
+CACHE_ENABLED              Enable file caching             true
+CACHE_TTL                  Default cache TTL (seconds)     3600
+MAX_FILE_SIZE              Max upload size (bytes)         5242880
+
+================================================================================
+17. TESTING THE APPLICATION
+================================================================================
+
+17.1 Demo Accounts:
+
+Role         Email                  Password    Access
+----         -----                  --------    ------
+Admin        admin@fixithub.pk      password    Full platform control
+Customer     ahmed@example.com      password    Book services, reviews
+Customer     sara@example.com       password    Book services, reviews
+Customer     bilal@example.com      password    Book services, reviews
+Technician   usman@example.com      password    Accept jobs, earnings
+Technician   kamran@example.com     password    Accept jobs, earnings
+Technician   tariq@example.com      password    Accept jobs, earnings
+
+17.2 Test Scenarios:
+
+a) Customer Flow:
+   1. Login as ahmed@example.com
+   2. Browse services on homepage
+   3. Click "Book Now" on a service
+   4. Fill booking form and submit
+   5. View booking in dashboard
+   6. Leave a review after completion
+
+b) Technician Flow:
+   1. Login as usman@example.com
+   2. View dashboard for pending jobs
+   3. Accept/reject booking requests
+   4. Update job status (on way -> in progress -> completed)
+   5. View earnings history
+   6. Reply to customer reviews
+
+c) Admin Flow:
+   1. Login as admin@fixithub.pk
+   2. View dashboard analytics and charts
+   3. Manage users (activate/deactivate)
+   4. Approve new technician applications
+   5. Manage services and categories
+   6. View reports and revenue data
+   7. Moderate reviews
+   8. Configure platform settings
+
+================================================================================
+18. SAMPLE DATA
+================================================================================
+
+18.1 Service Categories (8):
+1. Mobile Repair      - Phone screen, battery, software
+2. Laptop Repair      - Screen, cleaning, hardware upgrades
+3. Electrician        - Wiring, switches, generators
+4. Plumbing           - Pipes, toilets, water tanks
+5. AC Services        - Installation, gas refill, repair
+6. Appliance Repair   - Washing machine, fridge, microwave
+7. Home Maintenance   - Painting, carpentry, deep cleaning
+8. IT Support         - Network setup, computer repair, data recovery
+
+18.2 Total Services: 24 services across 8 categories
+18.3 Sample Technicians: 5 verified technicians across multiple cities
+18.4 Sample Bookings: 5 bookings in various statuses
+18.5 Sample Reviews: 2 reviews with technician replies
+
+================================================================================
+19. URL ROUTING
+================================================================================
+
+The application uses clean URLs without .php extensions.
+
+Public Routes:
+  /                    -> Homepage
+  /home                -> Homepage (alias)
+  /services            -> All services
+  /service-detail      -> Service detail page
+  /technicians         -> All technicians
+  /technician-profile  -> Technician profile
+  /about               -> About page
+  /contact             -> Contact page
+  /faq                 -> FAQ page
+  /book-service        -> Booking form
+
+Auth Routes:
+  /login               -> Login page
+  /register            -> Registration page
+  /logout              -> Logout action
+  /forgot-password     -> Password reset
+
+Dashboard Routes:
+  /user/dashboard      -> Customer dashboard
+  /user/bookings       -> Customer bookings
+  /technician/dashboard-> Technician dashboard
+  /technician/bookings -> Technician bookings
+  /admin/dashboard     -> Admin dashboard
+  /admin/users         -> User management
+
+API Routes:
+  /api/auth            -> Authentication API
+  /api/search          -> Search API
+  /api/notifications   -> Notifications API
+  /api/payment/*       -> Payment callbacks
+
+Routing is handled by:
+- router.php for PHP built-in server (development)
+- .htaccess with mod_rewrite for Apache (production)
+
+================================================================================
+20. FUTURE ENHANCEMENTS
+================================================================================
+
+- Real-time chat using WebSockets
+- Push notifications (Firebase Cloud Messaging)
+- Mobile application (React Native / Flutter)
+- Google Maps integration for technician tracking
+- SMS notifications via Twilio/local providers
+- Email notifications with templates
+- Advanced analytics dashboard
+- Multi-language support (Urdu, English)
+- Promo codes and discount system
+- Subscription plans for technicians
+- Service scheduling calendar view
+- Customer loyalty/rewards program
+
+================================================================================
+21. PROJECT CREDITS
+================================================================================
+
+Developed as a university project demonstrating:
+- Full-stack web development with PHP and MySQL
+- Role-based access control and authentication
+- RESTful API design with JWT
+- Security best practices (CSRF, XSS, SQL Injection prevention)
+- Responsive web design with Bootstrap 5
+- Payment gateway integration for Pakistan
+- SEO optimization techniques
+- MVC-inspired architecture
+- File-based caching for performance
+- Modern UI/UX design principles
+
+================================================================================
+                          END OF DOCUMENTATION
+================================================================================
