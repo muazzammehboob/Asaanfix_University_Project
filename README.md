@@ -1,4 +1,4 @@
-# FixIt Hub Pakistan 🔧
+# AsaanFix Pakistan 🔧
 
 **Pakistan's Premier Home Services Platform**  
 Book verified technicians for mobile repair, electrician, plumbing, AC services and more.
